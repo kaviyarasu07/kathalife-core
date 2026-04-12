@@ -7,13 +7,16 @@ com\kathalife\core\common\exception\ResourceNotFoundException.class
 com\kathalife\core\journal\entity\JournalActivity.class
 com\kathalife\core\user\dto\LifeSummaryRequest.class
 com\kathalife\core\auth\repository\PasswordChangeRequestRepository.class
+com\kathalife\core\journal\dto\WeekActivitiesResponse.class
 com\kathalife\core\auth\entity\PasswordChangeRequest$RequestStatus.class
 com\kathalife\core\auth\entity\PasswordChangeRequest.class
 com\kathalife\core\auth\controller\AuthController.class
 com\kathalife\core\common\entity\BaseEntity.class
+com\kathalife\core\journal\dto\DayActivitiesResponse.class
 com\kathalife\core\user\controller\UserController.class
 com\kathalife\core\auth\package-info.class
 com\kathalife\core\auth\dto\SignupRequest.class
+com\kathalife\core\common\exception\ActivityLockedException.class
 com\kathalife\core\common\config\OpenApiConfig.class
 com\kathalife\core\user\entity\User.class
 com\kathalife\core\user\service\UserServiceImpl.class
@@ -30,6 +33,7 @@ com\kathalife\core\user\entity\UserLifeSummary.class
 com\kathalife\core\common\config\SecurityConfig.class
 com\kathalife\core\journal\controller\JournalController.class
 com\kathalife\core\common\entity\Language.class
+com\kathalife\core\journal\entity\SttStatus.class
 com\kathalife\core\user\entity\BioProfile.class
 com\kathalife\core\auth\dto\RefreshTokenRequest.class
 com\kathalife\core\user\dto\ProfilePicResponse.class
@@ -54,7 +58,6 @@ com\kathalife\core\user\repository\BioProfileRepository.class
 com\kathalife\core\common\exception\GlobalExceptionHandler.class
 com\kathalife\core\KathalifeCoreApplication.class
 com\kathalife\core\auth\dto\AuthResponse.class
-com\kathalife\core\journal\entity\JournalActivity$SttStatus.class
 com\kathalife\core\user\service\UserService.class
 com\kathalife\core\user\repository\UserLifeSummaryRepository.class
 com\kathalife\core\auth\dto\ResetPasswordRequest.class

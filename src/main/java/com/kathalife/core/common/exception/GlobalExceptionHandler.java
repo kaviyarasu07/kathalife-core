@@ -45,6 +45,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Access denied"));
     }
 
+    @ExceptionHandler(ActivityLockedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleActivityLocked(ActivityLockedException ex) {
+        return ResponseEntity.status(HttpStatus.LOCKED)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
         String firstFieldError = ex.getBindingResult().getFieldErrors().stream()

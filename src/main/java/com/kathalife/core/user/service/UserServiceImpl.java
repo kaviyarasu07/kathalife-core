@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
         Optional<BioProfile> bioOpt = bioProfileRepository.findByUser(currentUser);
 
         if (bioOpt.isEmpty()) {
-            return new BioProfileResponse(null, null, null, null, null, null, null, null, null);
+            return new BioProfileResponse(null, null, null, null, null, null, null, currentUser.getLanguagePref(), null);
         }
 
         BioProfile bio = bioOpt.get();
@@ -72,12 +72,14 @@ public class UserServiceImpl implements UserService {
             newBio.setUser(currentUser);
             return newBio;
         });
+        
         if (request.languagePref() != null && !request.languagePref().isBlank()) {
             currentUser.setLanguagePref(request.languagePref());
             userRepository.save(currentUser);
             log.info("Language preference updated to: {} for user: {}",
                     request.languagePref(), currentUser.getEmail());
         }
+        
         if (request.fullName() != null) bio.setFullName(request.fullName());
         if (request.dateOfBirth() != null) bio.setDateOfBirth(request.dateOfBirth());
         if (request.hometown() != null) bio.setHometown(request.hometown());
@@ -85,8 +87,6 @@ public class UserServiceImpl implements UserService {
         if (request.familyNotes() != null) bio.setFamilyNotes(request.familyNotes());
 
         BioProfile saved = bioProfileRepository.save(bio);
-
-
 
         log.info("Bio profile updated for user id: {}", currentUser.getId());
 

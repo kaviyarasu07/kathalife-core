@@ -1,17 +1,25 @@
 package com.kathalife.core.user.entity;
 
-import com.kathalife.core.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bio_profiles")
 @Getter
 @Setter
-public class BioProfile extends BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class BioProfile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -34,4 +42,8 @@ public class BioProfile extends BaseEntity {
 
     @Column(name = "profile_pic_url")
     private String profilePicUrl;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

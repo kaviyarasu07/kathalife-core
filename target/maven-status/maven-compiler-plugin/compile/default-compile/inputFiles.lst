@@ -23,6 +23,7 @@ E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\com
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\controller\LanguageController.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\entity\BaseEntity.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\entity\Language.java
+E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\exception\ActivityLockedException.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\exception\DuplicateEmailException.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\exception\GlobalExceptionHandler.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\common\exception\InvalidTokenException.java
@@ -40,7 +41,10 @@ E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\jou
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\dto\ActivityRequest.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\dto\ActivityResponse.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\dto\ActivityUpdateRequest.java
+E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\dto\DayActivitiesResponse.java
+E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\dto\WeekActivitiesResponse.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\entity\JournalActivity.java
+E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\entity\SttStatus.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\package-info.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\repository\JournalActivityRepository.java
 E:\kathalife\kathalife-story\kathalife-core\src\main\java\com\kathalife\core\journal\service\JournalService.java

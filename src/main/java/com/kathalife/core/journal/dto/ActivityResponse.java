@@ -9,6 +9,7 @@ public record ActivityResponse(
     String content,
     LocalDate activityDate,
     String sttStatus,
+    Boolean storyLocked,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {}

@@ -18,6 +18,7 @@ A Spring Boot 3.5.1 modular monolith application with Java 21, PostgreSQL, JWT a
 - `ResourceNotFoundException.java` - For missing resources
 - `DuplicateEmailException.java` - For duplicate email registrations
 - `InvalidTokenException.java` - For invalid JWT tokens
+- `ActivityLockedException.java` - Custom exception for locked journal activities (423 status).
 
 #### Response (com.kathalife.core.common.response)
 - `ApiResponse<T>` - Generic API response record with success, message, data, timestamp
@@ -130,12 +131,13 @@ A Spring Boot 3.5.1 modular monolith application with Java 21, PostgreSQL, JWT a
 
 #### Entity (com.kathalife.core.journal.entity)
 - `JournalActivity.java` - @Entity extends BaseEntity (table: journal_activities)
-  - user (ManyToOne), content, activityDate, audioFilePath, sttText, sttStatus (enum), deletedAt
+  - user (ManyToOne), content, activityDate, audioFilePath, sttText, sttStatus (enum), deletedAt, storyLocked (boolean)
 
 #### DTO (com.kathalife.core.journal.dto)
-- ✅ FIXED — `ActivityRequest.java` (content, activityDate)
-- ✅ FIXED — `ActivityResponse.java` (id, content, activityDate, sttStatus, createdAt, updatedAt)
-- ✅ FIXED — `ActivityUpdateRequest.java` (content)
+- `ActivityRequest.java` (content, activityDate)
+- `ActivityResponse.java` (id, content, activityDate, sttStatus, storyLocked, createdAt, updatedAt)
+- `DayEntryResponse.java` (date, dayOfWeek, entry)
+- `WeekActivitiesResponse.java` (weekStart, weekEnd, totalEntries, storyGenerated, days)
 
 ---
 
@@ -175,9 +177,9 @@ A Spring Boot 3.5.1 modular monolith application with Java 21, PostgreSQL, JWT a
 ---
 
 ## File Count Summary
-- **Total Java Classes**: 62
+- **Total Java Classes**: 65
 - **Configuration Classes**: 4 (Includes Auth filters)
-- **Exception Classes**: 4
+- **Exception Classes**: 5
 - **Entity Classes**: 8
 - **Repository Interfaces**: 9
 - **Service Interfaces**: 5
@@ -227,7 +229,30 @@ A Spring Boot 3.5.1 modular monolith application with Java 21, PostgreSQL, JWT a
     - Added `languagePref` to `BioProfileResponse`
     - `UserServiceImpl` updates `users.language_pref` when bio profile is saved
     - Cleaner signup flow — fewer fields at registration
+11. **Journal Module Implementation**:
+    - 8 Journal Activity APIs implemented
+    - POST /activities — create with date default to today
+    - GET /activities?date= — get by specific date
+    - GET /activities/week?weekStart= — week view by day
+    - GET /activities/{id} — single entry
+    - PUT /activities/{id} — update (locked check)
+    - DELETE /activities/{id} — soft delete (locked check)
+    - GET /activities/deleted — recoverable entries
+    - PUT /activities/{id}/restore — restore within 30 days
+    - story_locked flag prevents edit/delete after story
+    - ActivityLockedException (423) for locked entries
+    - V10 migration adds story_locked column
+14. **Journal Module Redesigned — Single Entry Per Day**:
+    - Switched from multiple entries to single entry per day (upsert pattern)
+    - POST /activities → upsert create or update
+    - GET /activities?date= → single entry response
+    - Week view → one entry per day (null if empty)
+    - Removed separate PUT update endpoint
+    - Removed DayActivitiesResponse (not needed)
+    - Added DayEntryResponse with nullable entry
+    - Added partial unique index on (user_id, activity_date) where deleted_at IS NULL
+    - User edits by calling POST with same date
+    - Cleaner diary UX — one text per day
 
 ## Next Steps
-1. Implement business logic in Journal service methods
-2. Write unit and integration tests
+1. Write unit and integration tests
