@@ -1,6 +1,7 @@
 package com.kathalife.core.common.exception;
 
 import com.kathalife.core.common.response.ApiResponse;
+import com.kathalife.core.stt.exception.SttTranscriptionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +68,12 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred"));
+    }
+    @ExceptionHandler(SttTranscriptionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSttException(SttTranscriptionException ex) {
+        log.error("STT transcription error: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 }
