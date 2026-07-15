@@ -1,6 +1,13 @@
 spring:
   application:
     name: kathalife-core
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 26MB
+  ai:
+    anthropic:
+      api-key: "dummy-not-used-yet"
 
   datasource:
     url: jdbc:postgresql://localhost:5432/kathalife_db
@@ -30,6 +37,7 @@ spring:
       name: disable
 
 server:
+  address: 0.0.0.0
   port: 8080
   servlet:
     context-path: /api
@@ -60,3 +68,11 @@ logging:
     com.kathalife: DEBUG
     org.springframework.security: WARN
     org.hibernate: WARN
+
+sarvam:
+      api:
+        key: ${SARVAM_API_KEY}
+        base-url: https://api.sarvam.ai
+      stt:
+        endpoint: /speech-to-text
+        model: saaras:v3

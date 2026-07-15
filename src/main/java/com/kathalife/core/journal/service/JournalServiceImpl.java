@@ -1,5 +1,7 @@
 package com.kathalife.core.journal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kathalife.core.common.exception.ActivityLockedException;
 import com.kathalife.core.common.exception.ResourceNotFoundException;
 import com.kathalife.core.journal.dto.ActivityRequest;
@@ -9,6 +11,9 @@ import com.kathalife.core.journal.dto.WeekActivitiesResponse;
 import com.kathalife.core.journal.entity.JournalActivity;
 import com.kathalife.core.journal.entity.JournalActivity.SttStatus;
 import com.kathalife.core.journal.repository.JournalActivityRepository;
+import com.kathalife.core.outbox.JournalEntrySavedEvent;
+import com.kathalife.core.outbox.OutboxEvent;
+import com.kathalife.core.outbox.OutboxEventRepository;
 import com.kathalife.core.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +33,8 @@ import java.util.stream.Collectors;
 public class JournalServiceImpl implements JournalService {
 
     private final JournalActivityRepository journalActivityRepository;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     private ActivityResponse toResponse(JournalActivity activity) {
         return new ActivityResponse(
@@ -50,28 +57,55 @@ public class JournalServiceImpl implements JournalService {
         Optional<JournalActivity> existing = journalActivityRepository
                 .findByUserAndActivityDateAndDeletedAtIsNull(currentUser, activityDate);
 
+        JournalActivity activity;
         if (existing.isPresent()) {
-            JournalActivity activity = existing.get();
+            activity = existing.get();
 
             if (activity.getStoryLocked()) {
                 throw new ActivityLockedException("This entry is locked after story generation");
             }
 
             activity.setContent(request.content());
-            JournalActivity saved = journalActivityRepository.save(activity);
             log.info("Activity updated for user: {} date: {}", currentUser.getEmail(), activityDate);
-            return toResponse(saved);
+        } else {
+            activity = new JournalActivity();
+            activity.setUser(currentUser);
+            activity.setContent(request.content());
+            activity.setActivityDate(activityDate);
+            activity.setSttStatus(SttStatus.NONE);
+            activity.setStoryLocked(false);
+            log.info("Activity created for user: {} date: {}", currentUser.getEmail(), activityDate);
         }
 
-        JournalActivity activity = new JournalActivity();
-        activity.setUser(currentUser);
-        activity.setContent(request.content());
-        activity.setActivityDate(activityDate);
-        activity.setSttStatus(SttStatus.NONE);
-        activity.setStoryLocked(false);
-
         JournalActivity saved = journalActivityRepository.save(activity);
-        log.info("Activity created for user: {} date: {}", currentUser.getEmail(), activityDate);
+
+        // --- Create Outbox Event ---
+        try {
+            JournalEntrySavedEvent eventPayload = new JournalEntrySavedEvent(
+                    saved.getId(),
+                    saved.getUser().getId(),
+                    saved.getContent(),
+                    saved.getActivityDate(),
+                    null
+            );
+
+            String payloadJson = objectMapper.writeValueAsString(eventPayload);
+
+            OutboxEvent outboxEvent = new OutboxEvent(
+                    "JOURNAL_ENTRY",
+                    saved.getId(),
+                    "journal.entry.saved",
+                    payloadJson,
+                    LocalDateTime.now()
+            );
+            outboxEventRepository.save(outboxEvent);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize JournalEntrySavedEvent for outbox, activityId={}", saved.getId(), e);
+            // This will roll back the transaction, which is the desired behavior.
+            throw new RuntimeException("Failed to create outbox event", e);
+        }
+        // -------------------------
+
         return toResponse(saved);
     }
 
